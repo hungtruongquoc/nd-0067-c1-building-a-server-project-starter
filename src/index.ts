@@ -65,8 +65,10 @@ app.get('/api/images', async (req, res) => {
 
   try {
     filename = req.query["filename"];
-    width= req.query["width"];
-    height = req.query["height"];
+    // @ts-ignore
+    width= parseInt(req.query["width"], 10);
+    // @ts-ignore
+    height = parseInt(req.query["height"], 10);
     name = filename.split(".")[0];
     extension = filename.split(".")[1];
     fileParam = {name, width, height, extension};

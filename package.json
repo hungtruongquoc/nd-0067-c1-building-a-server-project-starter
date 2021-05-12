@@ -1,0 +1,36 @@
+{
+  "name": "image-processing-server-htruong",
+  "version": "1.0.0",
+  "description": "Udacity NodeJS Image Processing Server",
+  "main": "index.js",
+  "repository": "https://github.com/hungtruongquoc/nd-0067-c1-building-a-server-project-starter.git",
+  "author": "Hung Truong <hungtruongquoc@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start:dev": "NODE_ENV=DEVELOPMENT nodemon index.ts",
+    "transpile": "tsc --project ./",
+    "start": "nodemon src/index.ts",
+    "test": "npm run build && npm run jasmine",
+    "prettier": "prettier --config prettierrc 'src/**/*.js' --write",
+    "lint": "eslint",
+    "build": "npx tsc",
+    "jasmine": "jasmine"
+  },
+  "dependencies": {
+    "@types/sharp": "^0.28.0",
+    "eslint": "^7.26.0",
+    "express": "^4.17.1",
+    "jasmine": "^3.7.0",
+    "jasmine-spec-reporter": "^7.0.0",
+    "sharp": "^0.28.1",
+    "typescript": "^4.2.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.11",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
+    "@types/jasmine": "^3.7.2"
+  }
+}

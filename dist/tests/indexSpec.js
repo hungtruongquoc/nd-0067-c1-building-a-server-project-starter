@@ -43,15 +43,26 @@ var index_1 = __importDefault(require("../index"));
 var supertest_1 = __importDefault(require("supertest"));
 var request = supertest_1.default(index_1.default);
 describe('Test image endpoint', function () {
-    it('the endpoint is exposed', function (done) { return __awaiter(void 0, void 0, void 0, function () {
+    it('the endpoint is exposed', function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('api/images')];
+                case 0: return [4 /*yield*/, request.get('/api/images')];
                 case 1:
                     response = _a.sent();
                     expect(response.status).not.toBe(404);
-                    done();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    it('the endpoint should process a valid image', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, request.get('/api/images?filename=fjord.jpg&width=200&height=200')];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).toBe(200);
                     return [2 /*return*/];
             }
         });

@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -59,81 +40,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var fs_1 = __importStar(require("fs"));
-var sharp_1 = __importDefault(require("sharp"));
-var path = require('path');
-var thumbFolder = "thumb";
-var imagesFolder = "images";
+var fs_1 = require("fs");
+var helpers_1 = require("./helpers");
+var services_1 = require("./services");
+var path_1 = __importDefault(require("path"));
+var config_1 = __importDefault(require("./config"));
+var thumbFolder = config_1.default.thumbFolder;
 var SERVER_PORT = 3000;
 var app = express_1.default();
-function loadCachedImage(fileParam, res) {
-    var name = fileParam.name, width = fileParam.width, height = fileParam.height, extension = fileParam.extension;
-    var imagePath = path.resolve(path.join(thumbFolder, name + "_" + width + "_" + height + "." + extension));
-    var readStream = fs_1.default.createReadStream(imagePath, { flags: "r+" });
-    readStream.pipe(res);
-}
-function processImageFile(fileParam, res) {
-    return __awaiter(this, void 0, void 0, function () {
-        var name, width, height, extension, sourcePath, readFileStream, transform, targetPath, cacheFileStream, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    name = fileParam.name, width = fileParam.width, height = fileParam.height, extension = fileParam.extension;
-                    sourcePath = path.resolve(path.join(imagesFolder, name + "." + extension));
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fs_1.promises.stat(sourcePath)];
-                case 2:
-                    _a.sent();
-                    readFileStream = fs_1.default.createReadStream(sourcePath);
-                    readFileStream.on("error", function (err) {
-                        return res.status(500).send({
-                            message: err.message,
-                        });
-                    });
-                    transform = sharp_1.default().resize(parseInt(width), parseInt(height));
-                    targetPath = path.resolve(path.join(thumbFolder, name + "_" + width + "_" + height + "." + extension));
-                    cacheFileStream = fs_1.default.createWriteStream(targetPath, { flags: "w+" });
-                    readFileStream.pipe(transform).pipe(cacheFileStream);
-                    cacheFileStream.on("finish", function () {
-                        loadCachedImage({ name: name, width: width, height: height, extension: extension }, res);
-                    });
-                    return [2 /*return*/, true];
-                case 3:
-                    error_1 = _a.sent();
-                    console.error('No source file found');
-                    return [2 /*return*/, false];
-                case 4: return [2 /*return*/];
-            }
-        });
-    });
-}
-function getFileNameWithSize(originalFileName, width, height) {
-    var filename = originalFileName;
-    var name = filename.split(".")[0];
-    var extension = filename.split(".")[1];
-    return name + "_" + width + "_" + height + "." + extension;
-}
 app.get('/api/images', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var filename, width, height, name, extension, fileParam, imagePath, error_2, error_3, result;
+    var filename, width, height, name, extension, fileParam, imagePath, error_1, error_2, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                filename = null;
-                width = null;
-                height = null;
-                name = null;
-                extension = null;
-                fileParam = null;
+                filename = '';
+                name = '';
+                extension = '';
                 try {
-                    filename = req.query["filename"];
+                    filename = String(req.query["filename"]);
                     // @ts-ignore
                     width = parseInt(req.query["width"], 10);
                     // @ts-ignore
                     height = parseInt(req.query["height"], 10);
-                    name = filename.split(".")[0];
-                    extension = filename.split(".")[1];
+                    if (filename) {
+                        name = filename.split(".")[0];
+                        extension = filename.split(".")[1];
+                    }
                     fileParam = { name: name, width: width, height: height, extension: extension };
                 }
                 catch (error) {
@@ -144,17 +76,17 @@ app.get('/api/images', function (req, res) { return __awaiter(void 0, void 0, vo
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 11]);
-                imagePath = path.resolve(path.join(thumbFolder, "" + getFileNameWithSize(filename, width, height)));
+                imagePath = path_1.default.resolve(path_1.default.join(thumbFolder, "" + helpers_1.getFileNameWithSize(filename, width, height)));
                 return [4 /*yield*/, fs_1.promises.stat(imagePath)];
             case 2:
                 _a.sent();
                 // A cached image found
                 console.log('Found cached image.');
-                loadCachedImage(fileParam, res);
+                services_1.loadCachedImage(fileParam, res);
                 return [2 /*return*/];
             case 3:
-                error_2 = _a.sent();
-                if (!("ENOENT" === error_2.code)) return [3 /*break*/, 10];
+                error_1 = _a.sent();
+                if (!("ENOENT" === error_1.code)) return [3 /*break*/, 10];
                 console.log('No cached file found');
                 _a.label = 4;
             case 4:
@@ -164,13 +96,13 @@ app.get('/api/images', function (req, res) { return __awaiter(void 0, void 0, vo
                 _a.sent();
                 return [3 /*break*/, 8];
             case 6:
-                error_3 = _a.sent();
+                error_2 = _a.sent();
                 return [4 /*yield*/, fs_1.promises.mkdir(thumbFolder)];
             case 7:
                 _a.sent();
                 console.log('Created thumb folder');
                 return [3 /*break*/, 8];
-            case 8: return [4 /*yield*/, processImageFile(fileParam, res)];
+            case 8: return [4 /*yield*/, services_1.processImageFile(fileParam, res)];
             case 9:
                 result = _a.sent();
                 if (!result) {

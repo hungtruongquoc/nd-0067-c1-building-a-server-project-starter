@@ -3,7 +3,7 @@ import fs, { promises as fsPromises } from "fs";
 import sharp from "sharp";
 import path from "path";
 import config from "../config";
-import {FileParam} from "../routes";
+import { FileParam } from "../routes";
 
 const { thumbFolder, imagesFolder } = config;
 

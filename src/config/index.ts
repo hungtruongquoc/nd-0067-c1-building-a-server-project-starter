@@ -1,4 +1,4 @@
 export default {
-  thumbFolder: 'thumb',
-  imagesFolder: 'images'
-}
+  thumbFolder: "thumb",
+  imagesFolder: "images",
+};
